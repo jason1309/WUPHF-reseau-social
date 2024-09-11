@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}Profil de {{ user.prenom }} {{ user.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 col-12 col-md-10 offset-md-2 p-3">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card p-3 carte-profil">
+                <div class="d-flex align-items-center">
+                    <div class="photo-profil">
+                        <img src="{{ user.photo_profil }}" class="rounded-circle img-fluid border border-3 border-dark" style="min-height: 10rem; max-height: 10rem; min-width: 10rem; max-width: 10rem;">
+                    </div>
+                    <div class="d-flex flex-column info-profil ml-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <h4 class="mb-0 mt-0">{{ user.nom_utilisateur }}</h4>
+                            <div class="ml-3">
+                                {% if user.nom_utilisateur == session["user"] %}
+                                <div class="bouton-modif-profil">
+                                    <button type="button" class="btn btn-light" onclick="boutonModifierProfil()">
+                                        Modifier votre profil
+                                    </button>
+                                </div>
+                                {% else %}
+                                <button class="btn btn-sm btn-outline-primary bouton-profil mr-2"><a href="{{ url_for('afficher_conversation_avec_utilisateur', recepteur_nom=user.nom_utilisateur) }}" class="list-group-item list-group-item-action border-0 link-opacity-50-hover">Envoyer un message</a></button>
+                                {% if est_abonne %}
+                                <button id="bouton-abonnement" class="btn btn-sm btn-primary bouton-profil" onclick="boutonAbonnement('{{ user.nom_utilisateur }}', false)">Se désabonner</button>
+                                {% else %}
+                                <button id="bouton-abonnement" class="btn btn-sm btn-primary bouton-profil" onclick="boutonAbonnement('{{ user.nom_utilisateur }}', true)">S'abonner</button>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="statistiques">
+                                <span class="publications"><strong>{{ posts_reseau | length }}</strong> Publications</span>
+                            </div>
+                            <div class="statistiques">
+                                <span class="abonnés"><strong id="nb-abonnes">{{ abonnes | length }}</strong> Abonnés</span>
+                            </div>                            
+                            <div class="statistiques">
+                                <span class="abonnements"><strong>{{ abonnements | length }}</strong> Abonnement(s)</span>
+                            </div>
+                        </div>
+                        <div class="bio-section mt-3">
+                            <h5><strong>{{ user.prenom }} {{ user.nom }}</strong></h5>
+                            <p>{{ user.biographie }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="separateur-profil"></div>
+
+                <div class="container mt-5">
+                    <div class="row">
+                        {% for post in posts_reseau %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <img src="{{ url_for('static', filename=post.image) }}" class="card-img-top fixed-size" alt="Post Image">
+                                <div class="card-body">
+                                    <p class="card-text">Publié {{ post.horodatage }}</p>
+                                    <p class="card-text">Aimes: {{ post.nombre_total_aime }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modification-profil" class="modification-profil" style="display:none;">
+    <div class="contenu-formulaire-modif">
+        <form action="/modifier-profil" method="POST">
+            <div class="mb-3">
+                <label for="nom_utilisateur" class="form-label">Nom d'utilisateur</label>
+                <input type="text" class="form-control grisatre" id="nom_utilisateur" name="nom_utilisateur" value="{{ user.nom_utilisateur }}" readonly disabled>
+            </div>
+            <div class="mb-3">
+                <label for="prenom" class="form-label">Prénom</label>
+                <input type="text" class="form-control" id="prenom" name="prenom" value="{{ user.prenom }}">
+            </div>
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom</label>
+                <input type="text" class="form-control" id="nom" name="nom" value="{{ user.nom }}">
+            </div>
+            <div class="mb-3">
+                <label for="biographie" class="form-label">Biographie</label>
+                <textarea class="form-control" id="biographie-form" name="biographie" rows="3">{{ user.biographie }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="button" class="btn btn-secondary" onclick="boutonModifierProfil()">Annuler</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

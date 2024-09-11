@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}WUPHF{% endblock %}
+
+{% block content %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<body>
+    <section class="section-ajout-forum h-100" id="addService" style="background-color: #eeee;">
+        <div class="container-ajout-forum h-75" >
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-100">
+                    <div>
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <img src="{{ url_for('static', filename='img/forum-logo.svg') }}" alt="Forum Logo" class="logo" id="forum-logo">
+                        </div>
+                        <form action="/ajouter-post-forum" method="POST" enctype="multipart/form-data" name="form-add-post-forum" id="form-add-post-forum">
+                            <div class="text-center">
+                                <p class="header-forum">Créer une publication</p>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <input type="text" id="titre-publication" class="form-control" name="titre-publication"/>
+                                <label class="form-label" for="titre-publication">Titre de votre publication</label>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <div id="editor-container" ></div>
+                                <input type="hidden" name="contenu-post-forum" id="contenu-post-forum">
+                            </div>
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <button data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Ajouter votre publication</button>
+                                <p style="color: red;">{{error}}</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="{{ url_for('static', filename='js/forum.js') }}"></script>
+</body>
+{% endblock %}

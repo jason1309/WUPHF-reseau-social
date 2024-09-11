@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+
+{% block title %}WUPHF{% endblock %}
+
+{% block content %}
+<section class="content gradient-form-2 full-height">
+    <div class="card-msg" style="height: 95vh; overflow: hidden;">
+        <div class="row g-0 h-100">
+            <div class="col-12 col-lg-7 col-xl-9 d-flex flex-column" style="height: 95vh;">
+                <div class="py-2 px-4 border-bottom d-none d-lg-block">
+                    <div class="d-flex align-items-center py-1">
+                        <div class="position-relative">
+                            {% if recepteur %}
+                            <a href="{{ url_for('profile', user=recepteur.nom_utilisateur) }}" class="text-decoration-none text-dark">  
+                                <img src="../{{ recepteur.photo_profil }}" class="rounded-circle mr-1 border border-2 border-dark effect-photo" alt="Photo profil user" width="45" height="45">
+                            </a>
+                            {% else %}  
+                            <img src="{{ url_for('static', filename='img/profil/default.png') }}" class="rounded-circle mr-1 border border-2 border-dark" alt="Photo profil user" width="45" height="45">
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 pl-3">
+                            <h5><a href="{{ url_for('profile', user=recepteur.nom_utilisateur) }}" class="text-decoration-none text-dark effect-name">{% if recepteur %} {{ recepteur.nom_utilisateur }} {% else %} Conversations {% endif %}</a></h5>
+                        </div>
+                        <div>
+                            <button class="btn btn-light border btn-lg px-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal feather-lg">
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="19" cy="12" r="1"></circle>
+                                    <circle cx="5" cy="12" r="1"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1 position-relative" style="overflow-y: auto;">
+                    <div class="chat-messages p-4" id="boite_conversation">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.emetteur.nom_utilisateur == utilisateur_actuel %}
+                                    <div class="chat-message-right pb-4">
+                                        <div class="div-icon-msg d-flex flex-column align-items-center" data-utilisateur-photo-profil="..//img/profil/jeffrey.png">
+                                            <img src="../{{ message.emetteur.photo_profil }}" class="rounded-circle mr-1 border border-2 border-dark" alt="{{ message.emetteur.nom_utilisateur }}" width="45" height="45">
+                                            <div class="text-muted small text-nowrap mt-2">
+                                                {{ format_horodatage(message.horodatage, current_datetime) }}
+                                            </div>
+                                        </div>
+                                        <div class="txt-msg flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                                            <div class="mb-1" style="color: grey; opacity: 70%;">Moi</div>
+                                            {{ message.contenu }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="chat-message-left pb-4">
+                                        <div class="div-icon-msg d-flex flex-column align-items-center">
+                                            <img src="../{{ message.emetteur.photo_profil }}" class="rounded-circle mr-1 border border-2 border-dark" alt="{{ message.emetteur.nom_utilisateur }}" width="45" height="45">
+                                            <div class="text-muted small text-nowrap mt-2">
+                                                {{ format_horodatage(message.horodatage, current_datetime) }}
+                                            </div>
+                                        </div>
+                                        <div class="txt-msg flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                                            <div class="mb-1" style="color: grey; opacity: 70%;">{{ message.emetteur.nom_utilisateur }}</div>
+                                            {{ message.contenu }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="no-convo">
+                                {% if recepteur %}
+                                    Aucune conversation avec {{ recepteur.nom_utilisateur }}.
+                                {% else %}
+                                    Choisissez une conversation pour voir les messages
+                                    <br>
+                                    <i class="lni lni-arrow-right no-convo-fleche"></i>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex-grow-0 py-3 px-4 border-top">
+                    <div class="input-group">
+                        <input type="text" id="messageContent" class="form-control" placeholder="Écrivez un message...">
+                        <button class="btn btn-primary" onclick="envoyerMessage()">Envoyer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5 col-xl-3 border-right" style="height: 100vh; overflow-y: auto; position: sticky; top: 0;">
+                <div class="px-4 d-none d-md-block">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <input type="text" class="form-control my-3" placeholder="Rechercher...">
+                        </div>
+                    </div>
+                </div>
+                <h5>Vos conversations</h5>
+                {% for abonne in abonnes %}
+                <a href="{{ url_for('afficher_conversation_avec_utilisateur', recepteur_nom=abonne.nom_utilisateur) }}" class="user-list list-group-item list-group-item-action border-0 link-opacity-50-hover">
+                    <div class="user-list-container d-flex align-items-start effect-msg">
+                        <img src="../{{ abonne.abonnement_nom_utilisateur.photo_profil }}" class="rounded-circle mr-1 border border-2 border-dark" alt="Profile-img" width="45" height="45">
+                        <div class="flex-grow-1 ml-3">
+                            {{ abonne.nom_utilisateur }}
+                            <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <script>
+            const utilisateurPhotoProfil = document.querySelector('.card-msg').dataset.utilisateurPhotoProfil;
+    
+            function envoyerMessage() {
+                const messageContent = document.getElementById('messageContent').value;
+                const recepteurNom = "{{ recepteur.nom_utilisateur }}"; 
+            
+                if (!messageContent || !recepteurNom) {
+                    return;
+                }
+            
+                fetch('/api/envoyer_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        recepteur_nom: recepteurNom,
+                        contenu: messageContent,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        ajouterMessage(messageContent);
+                        document.getElementById('messageContent').value = '';
+                    } else {
+                        alert("Erreur lors de l'envoi du message.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+            
+            function ajouterMessage(contenu) {
+                const messagesContainer = document.querySelector('.chat-messages');
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message-right', 'pb-4');
+                messageElement.innerHTML = `
+                    <div class="div-icon-msg d-flex flex-column align-items-center">
+                        <img src="../img/profil/jeffrey.png" class="rounded-circle mr-1 border border-2 border-dark" alt="Moi" width="45" height="45">
+                        <div class="text-muted small text-nowrap mt-2">
+                            Maintenant
+                        </div>
+                    </div>
+                    <div class="txt-msg flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                        <div class="mb-1" style="color: grey; opacity: 70%;">Moi</div>
+                        ${contenu}
+                    </div>
+                `;
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+            }
+
+            document.getElementById('messageContent').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    envoyerMessage();
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                var chatMessages = document.getElementById("boite_conversation");
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+            </script>
+    </div>
+</section>
+{% endblock %}

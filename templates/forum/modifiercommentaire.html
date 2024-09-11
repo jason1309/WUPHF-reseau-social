@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Modifier Commentaire{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="css/styleAuth.css">
+<body>
+    <section class="h-75 service-form" id="addService" style="background-color: #eeee;">
+        <div class="container-pub py-5 h-75">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-100">
+                    <div>
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <img src="{{ url_for('static', filename='img/forum-logo.svg') }}" alt="Comment Logo" class="logo" id="comment-logo">
+                        </div>
+                        <form action="/modifier-commentaire-forum" method="POST">
+                            <div class="text-center">
+                                <p>Veuillez modifier votre commentaire</p>
+                            </div>
+                            <input type="hidden" name="id_commentaire" value="{{ commentaire.id_commentaire }}">
+                            <input type="hidden" name="id_post" value="{{ commentaire.id_post }}">
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <textarea class="control-commentaire" id="contenu-commentaire" rows="4" name="contenu">{{ commentaire.contenu }}</textarea>
+                            </div>
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <button data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Modifier votre commentaire</button>
+                                <p style="color: red;">{{error}}</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+{% endblock %}

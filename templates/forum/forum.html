@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+<div class="container mt-5 container-forum">
+    <div class="search-container d-flex justify-content-between mb-4 recherche-forum">
+        <form class="query-recherche-forum" onsubmit="event.preventDefault(); filtrerPostForum();">
+            <input id="forum-recherche" type="search" class="form-control search-input" placeholder="Rechercher une publication...">
+            <button id="bouton-recherche" type="button" class="btn btn-primary search-button" onclick="filtrerPostForum()">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+        <div class="btn-group shadow-0">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Trier par
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" id="trier-aimes">Populaire</a></li>
+                <li><a class="dropdown-item" href="#" id="trier-recent">Plus récents</a></li>
+                <li><a class="dropdown-item" href="#" id="trier-ancien">Plus anciens</a></li>
+                <li><a class="dropdown-item" href="#" id="trier-commentaires">Sujet discuté</a></li>
+            </ul>
+        </div>
+        <a href="/ajouter-post-forum" class="btn btn-primary btn-lg ajouter-publication-button">AJOUTER UNE PUBLICATION</a>
+    </div>
+    <div id="aucun-resultat-forum" style="display: none;">AUCUN RESULTAT</div>
+    {% for post in posts %}
+    <div class="forum-container mx-auto align-items-center forum-post" data-nomAuteur="{{ post['nom_auteur'] | lower }}"
+                                                                            data-titre="{{ post['titre'] }}"
+                                                                            data-description="{{ post['description'] }}"
+                                                                            data-likes="{{ post['nombre_total_aime'] }}"
+                                                                            data-timestamp="{{ post['timestamp'] }}"
+                                                                            data-comments="{{ post['nombre_commentaire'] }}">
+        <div class="boutons-vote d-flex flex-column align-items-center">
+            <button class="btn bouton-vote bouton-forum-up {{ 'fa-arrow-up-activate' if post.aime else 'fa-arrow-up-not-activate' }}" id="likePostForum-{{ post.id_post }}"><i class="fas fa-arrow-up"></i></button>
+            <span class="vote-comptage" id="nb-likes-forum-post-{{ post.id_post }}">{{ post['nombre_total_aime'] }}</span>
+            <button class="btn bouton-vote bouton-forum-down {{ 'fa-arrow-down-activate' if post.aime_pas else 'fa-arrow-down-not-activate' }}" id="notlikePostForum-{{ post.id_post }}"><i class="fas fa-arrow-down"></i></button>
+        </div>
+        <div class="forum-header d-flex align-items-center ml-3">
+            <img src="{{ url_for('static', filename=post['photo_profil']) }}" alt="Photo de profil" class="rounded-circle" width="50" height="50">
+            <div class="ml-3">
+                <a href="/forum/{{ post['id_post'] }}" class="titre-forum">{{ post['titre'] }}</a>
+                <div class="forum-details">
+                    Publié {{ post['horodatage'] }} par <a href="/profile?user={{ post['nom_auteur'] }}">{{ post['nom_auteur'] }}</a>
+                </div>
+                <div class="forum-options">
+                    <a href="/forum/{{ post['id_post'] }}">
+                        {% if post['nombre_commentaire'] > 1 %}
+                            <span>{{ post['nombre_commentaire'] }} commentaires</span></a>
+                        {% else %}
+                            <span>{{ post['nombre_commentaire'] }} commentaire</span></a>
+                        {% endif %}
+                    ·
+                    <a href="#" class="partager-forum">Partager</a> · 
+                    <a href="#" class="signaler-forum">Signaler</a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+      <div id="signalToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" style="background-color:#0e2238;">
+          <strong class="me-auto" style="color:antiquewhite">Notification</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Cette publication a bien été signalée
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='js/forum.js') }}"></script>
+{% endblock %}

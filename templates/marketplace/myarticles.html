@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}WUPHF{% endblock %}
+
+{% block content %}
+<div class="col-12 col-md-9 offset-md-2 p-3">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleAuth.css') }}">
+    <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+        <div class="container px-4 px-lg-5">
+                    <a class="navbar-brand" href="/marketplace">WUPHF - Marketplace </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <li class="nav-item">
+                            <a data-mdb-ripple-init class="btn btn-light nav-link" role="button" href="/mise-en-vente">Mettre En Vente</a>                   
+                        </li>
+                        <li class="nav-item">
+                            <a data-mdb-ripple-init class="btn btn-light nav-link" role="button" href="/article-en-vente">Mes Articles</a>
+                        </li>
+                        <form class="d-flex input-group w-auto ms-auto">
+                            <input
+                            type="search"
+                            class="form-control rounded"
+                            placeholder="Rechercher un article..."
+                            aria-label="Search"
+                            aria-describedby="search-addon"
+                            onsubmit="filterArticles()"
+                            />
+                            <span class="input-group-text border-0" id="search-addon">
+                            <i class="fas fa-search"></i>
+                            </span>
+                        </form>
+                    </div>                    
+                </div>                
+            </nav>
+    <section style="background-color: #eeee;">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                {% for article in articles %}
+                <div class="col">
+                    <div class="card border text-bg-light mb-3 h-100" style="width: 18rem;">                           
+                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem"></div>                           
+                        <img class="card-img-top-market fixed-size" src="{{ article.image }}" alt="{{ article.titre }}" />                           
+                        <div class="card-body p-4 text-center">
+                            <div class="text-center">                                        
+                                <div class="btn-group shadow-0">
+                                    <button type="button" class="btn btn-light dropdown-toggle" data-mdb-dropdown-init data-mdb-ripple-init aria-expanded="false">
+                                        Options
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button type="button" class="btn btn-light dropdown-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-post-id="">
+                                                Supprimer
+                                            </button>
+                                        </li>   
+                                        <li>
+                                            <form action="/modifier-publication" method="POST" class="dropdown-btn" name="form-get-pub">
+                                                <input type="hidden" name="id_post" value=""> 
+                                                <button type="submit" class="btn btn-light dropdown-btn">Modifier</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>                                                                                                   
+                                <h5>{{ article.titre }}</h5>                                                                                                            
+                            </div>
+                            <div class="text-center">
+                                {{ '%.2f'|format(article.prix) }}$
+                            </div>
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-light mt-auto" name="id_article" href="/article/{{ article.id_article }}">Voir informations</a></div>
+                            </div>
+                        </div>                        
+                    </div>
+                        {% endfor %}
+                </div>
+            </div>
+        </div>    
+    </section>        
+</div>
+{% endblock %}

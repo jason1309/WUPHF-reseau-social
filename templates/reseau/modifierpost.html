@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+
+{% block title %}WUPHF{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="css/styleAuth.css">
+<body>
+    <section class="h-150 gradient-form" id="creerpub" style="background-color: #eeee;">
+        <div class="container-pub py-5 h-100" >
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-100">
+                    <div class="text-center" >
+                        <img src="img/logo_gris.png"
+                        style="width: 140px;" alt="logo">
+                        <h4 class="">Modifier une publication</h4>
+                    </div> 
+                    <div>
+                        <form action="/modifier-publication" method="POST" enctype="multipart/form-data">
+                            <div data-mdb-input-init class="form-outline mb-4" id="form-description">
+                                <input name="id_post" value="{{ post.id_post }}" style="display: none;">
+                                <input name="img_path" value="{{ post.image }}" style="display: none;">
+                            </div>
+                            <div css="text-center">
+                                <p>Partagé vos photos préférées de votre animal et vos amis pourront y réagir!</p>
+                            </div>
+                            <div class="form-outline-file mb-4">
+                                <div class="d-flex justify-content-between align-items-center" style="visibility:hidden">
+                                <span id="customText"></span>
+                                </div>
+                                <div id="previewContainer" class="mt-3" style="display: none;">
+                                    <img id="previewImage" src="{{ post.image }}" alt="Aperçu de l'image" style="max-width: 100%; height: auto;"/>
+                                </div>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4" id="form-description">
+                                <textarea class="form-control form-txt-area" id="textAreaExample" rows="4" name="description">{{ post.description }}</textarea>
+                                <label class="form-label" for="form2Example22">Description</label>
+                            </div>
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <button data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" name="form-mod-pub" type="submit">Sauvegarder les modifications</button>
+                                <p style="color: red;">{{error}}</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        
+        const fileInput = document.getElementById("formFileLg");
+        const customButton = document.getElementById("customButton");
+        const customText = document.getElementById("customText");
+        const previewContainer = document.getElementById("previewContainer");
+        const previewImage = document.getElementById("previewImage");
+        
+        // Fonction pour charger l'image au chargement de la page si une source est fournie
+        window.addEventListener("load", function() {
+            if (previewImage.src && customText.textContent != 'Aucun fichier choisi') {      
+              const nomFichier = previewImage.src.split(/[\\\/]/).pop();
+              console.log(nomFichier)
+              customText.textContent = nomFichier;
+              previewContainer.style.display = "block";
+            }else {
+              customText.textContent = "Aucun fichier choisi";
+              previewContainer.style.display = "none";
+              previewImage.src = "";
+            } 
+        });
+        
+        customButton.addEventListener("click", function() {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener("change", function() {
+            const file = fileInput.files[0];
+            if (file) {
+                customText.textContent = file.name;
+                
+                const reader = new FileReader();
+                reader.addEventListener("load", function() {
+                    previewImage.src = reader.result;
+                    previewContainer.style.display = "block";
+                });
+                reader.readAsDataURL(file);
+            } else {
+                customText.textContent = "Aucun fichier choisi";
+                previewContainer.style.display = "none";
+                previewImage.src = "";
+            }
+        });
+            </script>
+</body>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ post_forum.titre }}{% endblock %}
+
+{% block content %}
+<div class="mt-4 container-forum-page">
+    <div class="card post-card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="d-flex align-items-center">
+                    <img src="{{ url_for('static', filename=post_forum.photo_profil) }}" alt="Photo de profil" class="rounded-circle" width="50" height="50">
+                    <div class="ml-3 d-flex flex-column profil-forum">
+                        <p class="text-muted mb-0"><strong>{{ post_forum.nom_auteur }}</strong> • {{ post_forum.horodatage }}</p>
+                    </div>
+                </div>
+                {% if post_forum.nom_auteur == utilisateur.nom_utilisateur %}
+                <div class="dropdown">
+                    <button type="button" class="btn btn-light dropdown-toggle" data-mdb-dropdown-init data-mdb-ripple-init aria-expanded="false">
+                        Options
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                        <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#confirmDeleteForumModal" data-forum-id="{{ post_forum.id_post }}">Supprimer</button></li>
+                        <li><a class="dropdown-item" href="/modifier-forum?id_post={{ post_forum.id_post }}">Modifier</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <h1 class="card-title">{{ post_forum.titre }}</h1>
+            <p class="mb-1">{{ post_forum.description|safe }}</p>
+            <div class="post-options">
+                <button class="btn btn-link p-0 mr-3 bouton-forum-up {{ 'fa-arrow-up-activate' if post_forum.aime else 'fa-arrow-up-not-activate' }}" id="likePostForum-{{ post_forum.id_post }}"><i class="far fa-arrow-alt-circle-up"></i></button>
+                <span class="post_de_la_page" id="nb-likes-forum-post-{{ post_forum.id_post }}">{{ post_forum['nombre_total_aime'] }}</span>
+                <button class="btn btn-link p-0 mr-3 bouton-forum-down {{ 'fa-arrow-down-activate' if post_forum.aime_pas else 'fa-arrow-down-not-activate' }}" id="notlikePostForum-{{ post_forum.id_post }}"><i class="far fa-arrow-alt-circle-down"></i></button>
+                <button class="btn btn-link p-0 mr-3"><i class="fas fa-share"></i> Partager</button>
+                <button class="btn btn-link p-0 mr-3 signaler-post-forum"><i class="fas fa-flag signaler-post-forum"></i> Signaler</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmDeleteForumModal" tabindex="-1" aria-labelledby="confirmDeleteForumModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteForumModalLabel">Confirmer la suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cette publication ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form action="/api/supprimer-post-forum" method="POST">
+                        <input type="hidden" name="id_post" id="forumIdToDelete" value="{{ post_forum.id_post }}">
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form>                 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comment-section mt-4" id="section-commentaire-forum">
+        <input type="hidden" name="id_post" value="{{ post_forum.id_post }}">
+        <div class="comment-box-wrapper">
+            <textarea class="form-control" id="textarea-commentaire-forum-{{ post_forum['id_post'] }}" name="contenu" rows="3" placeholder="Ajouter un commentaire..." required></textarea>
+            <button class="btn btn-primary btn-commenter-post-forum" id="commentaire-bouton-forum">Commenter</button>
+        </div>
+        <hr>
+        {% if commentaires %}
+            {% for commentaire in commentaires %}
+            <div class="card commentaire-card mb-3" id="commentaire-{{ commentaire.id_commentaire }}">
+                <div class="card-body d-flex align-items-start">
+                    <img src="{{ url_for('static', filename=commentaire.photo_profil) }}" alt="Photo de profil" class="rounded-circle" width="50" height="50">
+                    <div class="ml-3 d-flex flex-column align-items-start affichage-profil-forum">
+                        <p class="text-muted mb-1"><strong>{{ commentaire.nom_auteur }}</strong> • {{ commentaire.horodatage }}</p>
+                        <p class="mb-0">{{ commentaire.contenu }}</p>
+                        <div class="mt-2">
+                            <button class="btn btn-link p-0 mr-3 commentaire-options-button like-button-commentaire-forum {{ 'far-arrow-up-activate' if commentaire.aime else 'far-arrow-up-not-activate'}}" id="likeCommentaireForum-{{ commentaire.id_commentaire }}"><i class="far fa-arrow-alt-circle-up"></i></button>
+                            <span class="commentaire-aime" id="nb-likes-forum-commentaire-{{ commentaire.id_commentaire }}">{{ commentaire['commentaire_nombre_aime'] }}</span>
+                            <button class="btn btn-link p-0 mr-3 commentaire-options-button not-like-button-commentaire {{ 'far-arrow-down-activate' if commentaire.aime_pas else 'far-arrow-down-not-activate'}}" id="notlikeCommentaireForum-{{ commentaire.id_commentaire }}"><i class="far fa-arrow-alt-circle-down"></i></button>
+                            {% if commentaire.nom_auteur == utilisateur.nom_utilisateur %}
+                            <button class="btn btn-link p-0 mr-3 commentaire-options-button"><a href="/modifier-commentaire-forum?id_commentaire={{ commentaire.id_commentaire }}"><i class="fas fa-edit"></i> Modifier</a></button>
+                            <button class="btn btn-link p-0 mr-3 commentaire-options-button btn-supprimer-commentaire" data-bs-toggle="modal" data-bs-target="#confirmDeleteCommentModal" data-commentaire-id="{{ commentaire.id_commentaire }}"><i class="fas fa-trash"></i> Supprimer</button>
+                            {% endif %}
+                            <button class="btn btn-link p-0 mr-3 commentaire-options-button"><i class="fas fa-reply"></i> Répondre</button>
+                            <button class="btn btn-link p-0 mr-3 commentaire-options-button signaler-commentaire-forum"><i class="fas fa-flag signaler-commentaire-forum"></i> Signaler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="confirmDeleteCommentModal" tabindex="-1" aria-labelledby="confirmDeleteCommentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteCommentModalLabel">Confirmer la suppression</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer ce commentaire ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <form id="deleteCommentForm">
+                                <input type="hidden" name="id_commentaire" id="commentaireIdToDelete">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <h3 id="first-to-comment-h3">Soyez le premier à publier un commentaire..</h3>
+        {% endif %}
+    </div>
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="signalToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" style="background-color:#0e2238;">
+                    <strong class="me-auto" style="color:antiquewhite">Notification</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Cette publication a bien été signalée
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var commentairePhotoProfil = "{{ url_for('static', filename='') }}";
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta3/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='js/forum.js') }}"></script>
+{% endblock %}

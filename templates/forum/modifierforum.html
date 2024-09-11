@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}Modifier Publication Forum{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="css/styleAuth.css">
+<body>
+    <section class="h-55 service-form" id="addForum" style="background-color: #eeee;">
+        <div class="container-pub py-5 h-75">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-100">
+                    <div>
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <img src="{{ url_for('static', filename='img/forum-logo.svg') }}" alt="Forum Logo" class="logo" id="forum-logo">
+                        </div>
+                        <form action="/modifier-forum" method="POST" enctype="multipart/form-data" name="form-modifier-forum">
+                            <div class="text-center">
+                                <p>Veuillez modifier les informations de votre publication</p>
+                            </div>
+                            <input type="hidden" name="id_post" value="{{ postforum.id_post }}">
+                            <div data-mdb-input-init class="form-outline mb-4 modif-titre">
+                                <input type="text" id="titre-post" class="form-control control-forum" name="titre" value="{{ postforum.titre }}"/>
+                                <label class="form-label" for="titre-post">Titre de la publication</label>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4 modif-description">
+                                <textarea class="form-control control-forum" id="description-post" rows="4" name="description">{{ postforum.description }}</textarea>
+                                <label class="form-label" for="description-post">Description</label>
+                            </div>
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <button data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Modifier votre publication</button>
+                                <p style="color: red;">{{error}}</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+{% endblock %}

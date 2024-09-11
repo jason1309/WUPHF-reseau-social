@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}WUPHF{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="css/styleAuth.css">
+<body>
+    <section class="h-75 service-form" id="addService" style="background-color: #eeee;">
+        <div class="container-pub py-5 h-75" >
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-100">
+                    <div>
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <img src="{{ url_for('static', filename='img/service-logo.svg') }}" alt="Service Logo" class="logo" id="service-logo">
+                        </div>
+                        <form action="/modifier-service" method="POST" enctype="multipart/form-data" name="form-add-service">
+                            <div class="text-center">
+                                <p>Veuillez modifier les informations désirées à propos de votre service</p>
+                            </div>
+                            <input type="hidden" name="id_service" value="{{ service.id_service }}">
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <input type="text" id="titre-service" class="form-control" name="titre_service" value="{{ service.titre }}"/>
+                                <label class="form-label" for="titre-service">Titre du service</label>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <textarea class="form-control" id="description-service" rows="4" name="description">{{ service.description }}</textarea>
+                                <label class="form-label" for="description-service">Description</label>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <input type="text" id="cout-service" class="form-control" name="cout_service" value="{{ service.prix }}"/>
+                                <label class="form-label" for="cout-service">Coût du service</label>
+                            </div>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <input type="text" id="disponibilite-service" class="form-control" name="disponibilite_service" value="{{ service.horaire }}"/>
+                                <label class="form-label" for="disponibilite-service">Disponibilité</label>
+                            </div>
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <button data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Modifier votre service</button>
+                                <p style="color: red;">{{error}}</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+{% endblock %}

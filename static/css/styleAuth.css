@@ -1,0 +1,29 @@
+/* AUTHENTICATION PAGE */
+
+.gradient-custom-2 {
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(90deg, rgba(14,34,56,1) 0%, rgba(80,78,144,1) 100%);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(90deg, rgba(14,34,56,1) 0%, rgba(80,78,144,1) 100%);
+    }
+
+.gradient-custom-3 {
+    /* Chrome 10-25, Safari 5.1-6 */
+    /*background: -webkit-linear-gradient(90deg, rgba(128,128,128,1) 0%, rgba(210,208,208,1) 40%, rgba(179,168,168,1) 69%, rgba(128,128,128,1) 100%);*/
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    /*background: linear-gradient(90deg, rgba(128,128,128,1) 0%, rgba(210,208,208,1) 40%, rgba(179,168,168,1) 69%, rgba(128,128,128,1) 100%);*/
+    background: lightgrey;
+    }
+    
+    @media (min-width: 768px) {
+    .gradient-form {
+        min-height: 100vh;
+        height: 100% !important;
+    }
+    }
+    @media (min-width: 769px) {
+    .gradient-custom-2 {
+    border-top-right-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+    }
+    }

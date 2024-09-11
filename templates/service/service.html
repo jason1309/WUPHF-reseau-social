@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}WUPHF - Services {% endblock %}
+
+{% block content %}
+<div class="container-ajout-service mb-4">
+    <div class="row">
+        <div class="col-auto">
+            <a href="/ajouter-service"><button class="btn btn-primary btn-lg w-100">AJOUTER UN SERVICE</button></a>
+        </div>
+        <div class="col-auto">
+            <a href="/utilisateur-service"><button class="btn btn-primary btn-lg w-100">MES SERVICES</button></a>
+        </div>
+    </div>
+</div>
+<div class="container-recherche-service">
+    <form onsubmit="event.preventDefault(); filtrerService();">
+        <div class="input-group mb-3">
+            <input id="service-recherche" type="search" class="form-control" placeholder="Rechercher un service..">
+            <button id="bouton-recherche" type="button" class="btn btn-primary" onclick="filtrerService()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% for service in services %}
+<div id="aucun-resultat-service" style="display: none;">AUCUN RESULTAT</div>
+<div class="container-service service-post" data-nomUtilisateur="{{ service.vendeur.nom_utilisateur | lower }}"
+                                data-prix="{{ service.prix }}"
+                                data-titre="{{ service.titre }}"
+                                data-description="{{ service.description }}"
+                                data-horaire="{{ service.horaire }}">
+    <div class="row">
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-3 d-flex align-items-center justify-content-center">
+                    <img src="{{ url_for('static', filename=service.vendeur.photo_profil) }}" class="img-fluid rounded-circle border border-3 border-dark img-profil-service" alt="Photo profil">
+                </div>
+                <div class="col-md-9">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ service.titre }}</h5>
+                        <p class="card-text">Description: {{ service.description }}</p>
+                        <p class="card-text">Coût: {{ '%.2f'|format(service.prix) }}$</p>
+                        <p class="card-text">Horaire: {{ service.horaire }}</p>
+                        <button class="btn btn-primary btn-service"><a href="{{ url_for('afficher_conversation_avec_utilisateur', recepteur_nom=service.vendeur.nom_utilisateur) }}" class="list-group-item list-group-item-action border-0 link-opacity-50-hover">Contacter  {{ service.vendeur.nom_utilisateur }}</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+</div>
+{% endfor %}
+<script src="{{ url_for('static', filename='js/service.js') }}"></script>
+{% endblock %}

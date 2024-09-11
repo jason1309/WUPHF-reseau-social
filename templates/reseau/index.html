@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+
+{% block title %}WUPHF{% endblock %}
+
+{% block content %}
+<div class="container-pub">
+    <div class="container-pub mt-3">
+        <div class="input-group mb-3">
+            <input id="entre-recherche" type="search" class="form-control" placeholder="Rechercher un maître.." oninput="suggestionProfils()">
+            <button id="bouton-recherche" type="button" class="btn btn-primary" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;" onclick="filterPosts()">
+                <i class="fas fa-search"></i>
+            </button>
+            <div id="liste-suggestion" class="list-group"></div>
+        </div>
+        <input type="hidden" id="url-static" value="{{ url_for('static', filename='') }}">
+        {% if posts_reseau %}
+        {% for post in posts_reseau %}
+        <div class="row post-card" data-username="{{ post.auteur.nom_utilisateur | lower }}">
+            <div class="card mb-3" data-post-id="{{ post.id_post }}">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="img-border">
+                            <a href="{{ url_for('profile', user=post.auteur.nom_utilisateur) }}" class="text-decoration-none text-dark">
+                                <img src="{{ url_for('static', filename=post.auteur.photo_profil) }}" class="effect-photo img-fluid rounded-circle profile-img border border-3 border-dark" alt="Photo profil">
+                            </a>        
+                        </div>
+                        <div class="post-profil-name ms-3 d-flex flex-column flex-grow-1">
+                            <a href="{{ url_for('profile', user=post.auteur.nom_utilisateur) }}" class="text-decoration-none text-dark">
+                                <h6 class="mb-0 text-truncate effect-photo">{{ post.auteur.nom_utilisateur }}</h6>
+                            </a>
+                            <small class="text-muted">{{ post.horodatage }}</small>
+                        </div>
+                    </div>
+                    {% if post.auteur.nom_utilisateur == session["user"] %}
+                    <div class="btn-group shadow-0">
+                        <button type="button" class="btn btn-light dropdown-toggle" data-mdb-dropdown-init data-mdb-ripple-init aria-expanded="false">
+                            Options
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button type="button" class="btn btn-light dropdown-btn" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-post-id="{{ post.id_post }}">
+                                    Supprimer
+                                </button>
+                            </li>
+                            <li>
+                                <form action="/modifier-publication" method="POST" class="dropdown-btn" name="form-get-pub">
+                                    <input type="hidden" name="id_post" value="{{ post.id_post }}"> 
+                                    <button type="submit" class="btn btn-light dropdown-btn">Modifier</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}                    
+                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmer la suppression</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Êtes-vous sûr de vouloir supprimer cette publication ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <form action="/api/supprimer-publication" method="POST" id="deletePostForm">
+                                        <input type="hidden" name="id_post" id="postIdToDelete" value="{{ post.id_post }}">
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <img src="{{ url_for('static', filename=post.image) }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <div class="actions icone-post">
+                            <i class="far fa-heart {{ 'liked' if post.liked else 'not-like-button' }}" id="likePostIcon-{{ post.id_post }}" onclick="activerBoutonLike(this)"></i>
+                            <i class="far fa-comment"></i> 
+                    </div>
+                    {% if post.nombre_total_aime < 1 %}
+                    <p class="nb-likes" id="nb-likes-{{ post.id_post }}">Aucune mention j&apos;aime</p>
+                    {% elif post.nombre_total_aime > 1 %}
+                    <p class="nb-likes" id="nb-likes-{{ post.id_post }}">{{ post.nombre_total_aime }} mentions j&apos;aime</p>
+                    {% else %}
+                    <p class="nb-likes" id="nb-likes-{{ post.id_post }}">1 mention j&apos;aime</p>
+                    {% endif %}
+                    <h6 class="card-title">{{ post.auteur.nom_utilisateur }}</h6>
+                    <p class="card-text">{{ post.description }}</p>
+                    <hr>
+                    <div class="comment-actions">
+                        {% if post.contient_commentaire %}
+                            <button class="btn btn-link p-0 btn-affiche-commentaire" id="btn-plus-{{ post.id_post }}" data-post-id="{{ post.id_post }}">Afficher les commentaires</button>
+                        {% else %}
+                            <button class="btn btn-link p-0 btn-affiche-commentaire" id="btn-plus-{{ post.id_post }}" data-post-id="{{ post.id_post }}" style="display:none">Afficher les commentaires</button>
+                        {% endif %}
+                            <div id="section-commentaire-{{ post.id_post }}" style="display: none;"></div>
+                            <button class="btn btn-link p-0 btn-affiche-moins-commentaire" id="btn-moins-{{ post.id_post }}" data-post-id="{{ post.id_post }}" style="display:none">Cacher les commentaires</button>
+                            <textarea class="form-control mt-2 newCommentText" id="newCommentText-{{ post.id_post }}" rows="1" placeholder="Ajouter un commentaire..." oninput="activerBoutonPublier(this)"></textarea>
+                            <div id="publierCommentaireContainer-{{ post.id_post }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <h2>Aucune publication</h2>
+        {% endif %}
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
