@@ -3,6 +3,9 @@ Bienvenue dans le dépôt Git de WUPHF, une plateforme centralisée conçue pour
 
 Ce projet a été réalisé lors du cours INM5151 - Projet d'analyse et de modélisation (Été 2024). Le but était de produire un prototype du logiciel pour démontrer les fonctionnalités du projet, généralement les plus complexes ou les plus risquées. C'est pourquoi certaines vérifications nécessaires ou un design responsive n'ont pas été implémenté. Une approche incrémentale était requise sous forme de 3 itérations de 3 semaines.
 
+## Démonstration
+https://github.com/user-attachments/assets/1e392dc6-79db-43d3-b7c2-8d3342b2a9cb
+
 ## Table des matières
 - [Description](#description)
 - [Fonctionnalités](#fonctionnalités)
